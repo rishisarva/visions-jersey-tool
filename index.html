@@ -17,6 +17,24 @@
     --radius:14px;
   }
   *{box-sizing:border-box;}
+  .refresh-bar{
+    position:sticky;top:0;z-index:50;
+    display:flex;justify-content:center;
+    padding:10px;margin:-28px -16px 18px;
+    background:rgba(21,82,51,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(255,255,255,.12);
+  }
+  .refresh-bar button{
+    border:1px solid rgba(255,255,255,.4);
+    background:var(--chalk);color:var(--pitch-dk);
+    font-family:inherit;font-weight:800;font-size:14px;
+    padding:9px 18px;border-radius:999px;cursor:pointer;
+    transition:transform .05s,box-shadow .15s;
+    box-shadow:0 4px 12px -4px rgba(0,0,0,.4);
+  }
+  .refresh-bar button:hover{box-shadow:0 6px 16px -4px rgba(0,0,0,.5);}
+  .refresh-bar button:active{transform:translateY(1px);}
   body{
     margin:0;
     font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
@@ -117,6 +135,9 @@
 </style>
 </head>
 <body>
+<div class="refresh-bar">
+  <button id="refreshBtn" title="Clear and start a new order">🔄 New order / Refresh</button>
+</div>
 <div class="wrap">
   <header>
     <div class="kicker">Visions Jersey</div>
@@ -159,6 +180,8 @@
 
 <script>
 const $ = id => document.getElementById(id);
+
+$('refreshBtn').addEventListener('click', () => location.reload());
 
 function num(str){
   if(str==null) return null;
