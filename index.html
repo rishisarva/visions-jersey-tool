@@ -228,26 +228,23 @@ function buildMessage(o, discount, partial, upi){
 
   return (
 `Hi ${firstName}! 👋⚽
-Your order #${o.orderNo||'—'} (₹${money(total)}) is still pending payment — let's get it shipped to you! 📦
 
-🧾 Your order:
-${itemLines}
+Your order *#${o.orderNo||'—'}* (₹${money(total)}) is still pending payment. Please choose how you'd like to pay so we can ship it out:
 
-💳 Choose how you'd like to pay:
-
-⭐ OPTION 1 — PREPAID  (Recommended ✅)
+*⭐ OPTION 1 — PREPAID (Recommended ✅)*
 • Pay the full ₹${money(total)} now.
-• Nothing to pay on delivery — totally hassle-free.
-• Your order is locked in and ships first. 🚀
+• Nothing to pay on delivery — quick and hassle-free.
+• Your order is confirmed instantly and ships first. 🚀
 
-🛵 OPTION 2 — PARTIAL / COD
-• Pay ₹${money(partial)} now (this covers our cash-on-delivery handling, which costs more on our side).
-• Then pay ₹${money(codJersey)} on delivery in cash${discNote} — that's just your jersey amount.
+🛵 *OPTION 2 — PARTIAL / COD*
+• Pay ₹${money(partial)} now to cover cash-on-delivery handling.
+• Then pay ₹${money(codJersey)} in cash on delivery${discNote}.
 
 💸 Pay here (UPI): ${upi}
 
-After paying, reply 1 or 2 so we know which option you picked — we'll confirm and ship it out. 📦✨
-Any issue? Just type "problem" and we'll sort it for you. 🙌
+After paying, just reply *1* or *2* and we'll confirm and ship your order. 📦
+Any issue? Reply "problem" and we'll help you out. 🙌
+
 — Visions Jersey`
   );
 }
