@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visions Jersey — Order to Payment Message</title>
+<style>
+  :root{
+    --ink:#0f1b2d;
+    --paper:#f3efe6;
+    --line:#d8d0c0;
+    --pitch:#1f6f43;      /* football-pitch green */
+    --pitch-dk:#155233;
+    --chalk:#fbfaf6;
+    --amber:#c8761c;
+    --muted:#6b6457;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
+    background:
+      repeating-linear-gradient(90deg,transparent 0 58px,rgba(255,255,255,.03) 58px 60px),
+      var(--pitch);
+    color:var(--ink);
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{
+    text-align:center;color:var(--chalk);margin-bottom:22px;
+  }
+  header .kicker{
+    text-transform:uppercase;letter-spacing:.28em;font-size:11px;
+    opacity:.8;margin-bottom:6px;
+  }
+  header h1{
+    margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px;
+    text-shadow:0 2px 0 rgba(0,0,0,.18);
+  }
+  header p{margin:6px 0 0;font-size:13px;opacity:.85;}
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    box-shadow:0 18px 40px -22px rgba(0,0,0,.55);
+  }
+  label{
+    display:block;font-weight:700;font-size:13px;margin:0 0 7px;
+    color:var(--ink);
+  }
+  .hint{font-weight:400;color:var(--muted);font-size:12px;}
+  textarea{
+    width:100%;min-height:230px;resize:vertical;
+    font-family:ui-monospace,"Cascadia Code",Consolas,monospace;
+    font-size:13px;line-height:1.5;
+    padding:13px;border:1px solid var(--line);border-radius:10px;
+    background:var(--chalk);color:var(--ink);
+  }
+  .row{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;}
+  .field{flex:1 1 200px;}
+  input[type=number],input[type=text]{
+    width:100%;padding:11px 12px;border:1px solid var(--line);
+    border-radius:10px;background:var(--chalk);color:var(--ink);
+    font-size:14px;font-family:inherit;
+  }
+  textarea:focus,input:focus{outline:2px solid var(--pitch);outline-offset:1px;}
+  .btn{
+    margin-top:18px;width:100%;border:none;cursor:pointer;
+    background:var(--pitch);color:var(--chalk);
+    font-size:16px;font-weight:800;letter-spacing:.02em;
+    padding:14px;border-radius:11px;
+    transition:background .15s,transform .05s;
+  }
+  .btn:hover{background:var(--pitch-dk);}
+  .btn:active{transform:translateY(1px);}
+  .out-card{margin-top:22px;display:none;}
+  .out-card.show{display:block;}
+  .out-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;margin-bottom:12px;flex-wrap:wrap;
+  }
+  .out-head h2{margin:0;font-size:16px;}
+  .pill{
+    font-size:12px;background:#e7e0d2;border:1px solid var(--line);
+    border-radius:999px;padding:4px 11px;color:var(--muted);
+  }
+  .msg{
+    white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;
+    font-size:13.5px;line-height:1.6;background:var(--chalk);
+    border:1px dashed var(--line);border-radius:10px;padding:15px;
+    color:var(--ink);
+  }
+  .copy{
+    border:1px solid var(--pitch);background:transparent;color:var(--pitch-dk);
+    font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;
+    cursor:pointer;
+  }
+  .copy.done{background:var(--pitch);color:var(--chalk);border-color:var(--pitch);}
+  .summary{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;margin-bottom:14px;
+  }
+  .summary div{
+    background:var(--chalk);border:1px solid var(--line);border-radius:9px;
+    padding:9px 11px;font-size:13px;
+  }
+  .summary span{display:block;color:var(--muted);font-size:11px;margin-bottom:2px;}
+  .err{
+    color:#9a2a2a;background:#f7e3e0;border:1px solid #e3b6b0;
+    border-radius:9px;padding:11px 13px;font-size:13px;margin-top:14px;display:none;
+  }
+  .err.show{display:block;}
+  footer{text-align:center;color:var(--chalk);opacity:.7;font-size:12px;margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Visions Jersey</div>
+    <h1>Order → Payment Message</h1>
+    <p>Paste the new-order text, set a discount if any, and get a ready-to-send message.</p>
+  </header>
+
+  <div class="card">
+    <label for="order">Paste full order text
+      <span class="hint">— copy the whole "New Order Received" notification</span>
+    </label>
+    <textarea id="order" placeholder="👉 New Order Received @ Visions Jersey&#10;#️⃣ Order number    : 20804&#10;..."></textarea>
+
+    <div class="row">
+      <div class="field">
+        <label for="partial">Partial amount now (₹) <span class="hint">— COD handling fee</span></label>
+        <input type="number" id="partial" value="150" min="0" step="1">
+      </div>
+      <div class="field">
+        <label for="upi">UPI ID</label>
+        <input type="text" id="upi" value="iblamerishi@fam">
+      </div>
+    </div>
+
+    <button class="btn" id="go">Generate message</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div class="card out-card" id="outCard">
+    <div class="summary" id="summary"></div>
+    <div class="out-head">
+      <h2>Customer message</h2>
+      <button class="copy" id="copy">Copy message</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <footer>Internal tool · numbers are read straight from the order you paste</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function num(str){
+  if(str==null) return null;
+  const m = String(str).replace(/,/g,'').match(/-?\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : null;
+}
+function money(n){
+  // show whole number if no paise, else 2 decimals
+  return Number.isInteger(n) ? n.toString() : n.toFixed(2);
+}
+
+function parseOrder(text){
+  const o = {};
+
+  const orderM   = text.match(/Order\s*number\s*[:\-]?\s*(\d+)/i);
+  const totalM   = text.match(/Total\s*Amount\s*[:\-]?\s*₹?\s*([\d,]+(?:\.\d+)?)/i)
+                 || text.match(/(?:^|\n)\s*Total\s*[:\-]?\s*₹?\s*([\d,]+(?:\.\d+)?)/i);
+  const subM     = text.match(/Subtotal\s*[:\-]?\s*₹?\s*([\d,]+(?:\.\d+)?)/i);
+  const discM    = text.match(/Discount\s*[:\-]?\s*-?\s*₹?\s*([\d,]+(?:\.\d+)?)/i);
+  const shipM    = text.match(/Shipping\s*[:\-]?\s*₹?\s*([\d,]+(?:\.\d+)?)/i);
+  const emailM   = text.match(/Email\s*[:\-]?\s*([^\s]+@[^\s]+)/i);
+  const statusM  = text.match(/Order\s*Status\s*[:\-]?\s*([A-Za-z]+)/i);
+
+  o.orderNo  = orderM ? orderM[1] : null;
+  o.total    = totalM ? num(totalM[1]) : null;
+  o.subtotal = subM ? num(subM[1]) : null;
+  o.discount = discM ? num(discM[1]) : 0;
+  o.shipping = shipM ? num(shipM[1]) : null;
+  o.email    = emailM ? emailM[1] : null;
+  o.status   = statusM ? statusM[1] : null;
+
+  // Items: lines that begin with ⭐ (strip the star)
+  o.items = (text.match(/⭐[^\n]+/g) || []).map(s => s.replace(/^⭐\s*/, '').trim());
+
+  // Customer name: first non-empty line(s) after "Billing address:"
+  o.name = null;
+  const bIdx = text.search(/Billing\s*address\s*:?/i);
+  if(bIdx !== -1){
+    const after = text.slice(bIdx).split('\n').slice(1)
+      .map(l => l.trim())
+      .filter(l => l.length);
+    // take lines until we hit something that looks like an address/number
+    const nameParts = [];
+    for(const line of after){
+      if(/\d/.test(line) || /@/.test(line) || /^\+?\d/.test(line)) break;
+      nameParts.push(line);
+      if(nameParts.length === 2) break; // first + last
+    }
+    if(nameParts.length) o.name = nameParts.join(' ');
+  }
+
+  return o;
+}
+
+function buildMessage(o, discount, partial, upi){
+  const total = o.total != null ? o.total : (o.subtotal||0)+(o.shipping||0);
+  const codJersey = Math.max(0, (o.subtotal||0) - discount); // pay-on-delivery amount
+
+  const firstName = o.name ? o.name.split(' ')[0] : 'there';
+  const itemLines = o.items.length
+    ? o.items.map(i => '• ' + i).join('\n')
+    : '• your order';
+
+  const discNote = discount > 0
+    ? ` (after ₹${money(discount)} discount)`
+    : '';
+
+  return (
+`Hi ${firstName}! 👋⚽
+Your order #${o.orderNo||'—'} (₹${money(total)}) is still pending payment — let's get it shipped to you! 📦
+
+🧾 Your order:
+${itemLines}
+
+💳 Choose how you'd like to pay:
+
+⭐ OPTION 1 — PREPAID  (Recommended ✅)
+• Pay the full ₹${money(total)} now.
+• Nothing to pay on delivery — totally hassle-free.
+• Your order is locked in and ships first. 🚀
+
+🛵 OPTION 2 — PARTIAL / COD
+• Pay ₹${money(partial)} now (this covers our cash-on-delivery handling, which costs more on our side).
+• Then pay ₹${money(codJersey)} on delivery in cash${discNote} — that's just your jersey amount.
+
+💸 Pay here (UPI): ${upi}
+
+After paying, reply 1 or 2 so we know which option you picked — we'll confirm and ship it out. 📦✨
+Any issue? Just type "problem" and we'll sort it for you. 🙌
+— Visions Jersey`
+  );
+}
+
+$('go').addEventListener('click', () => {
+  const text = $('order').value.trim();
+  const err = $('err');
+  err.classList.remove('show'); err.textContent='';
+
+  if(!text){
+    err.textContent = 'Paste the order text first.';
+    err.classList.add('show'); return;
+  }
+
+  const o = parseOrder(text);
+
+  if(o.subtotal == null && o.total == null){
+    err.textContent = 'Could not find a Subtotal or Total in that text. Check you pasted the full order.';
+    err.classList.add('show'); return;
+  }
+
+  const discount = Math.max(0, o.discount || 0);
+  const partial  = Math.max(0, num($('partial').value) || 0);
+  const upi      = $('upi').value.trim() || '—';
+
+  // summary chips
+  const total = o.total != null ? o.total : (o.subtotal||0)+(o.shipping||0);
+  const cod = Math.max(0,(o.subtotal||0)-discount);
+  $('summary').innerHTML = [
+    ['Customer', o.name||'—'],
+    ['Order #', o.orderNo||'—'],
+    ['Subtotal', '₹'+money(o.subtotal||0)],
+    ['Discount', '₹'+money(discount)],
+    ['Total', '₹'+money(total)],
+    ['Pay on delivery', '₹'+money(cod)],
+  ].map(([k,v]) => `<div><span>${k}</span>${v}</div>`).join('');
+
+  $('msg').textContent = buildMessage(o, discount, partial, upi);
+  $('outCard').classList.add('show');
+  $('outCard').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+$('copy').addEventListener('click', async () => {
+  try{
+    await navigator.clipboard.writeText($('msg').textContent);
+    const b = $('copy'); b.textContent='Copied ✓'; b.classList.add('done');
+    setTimeout(()=>{b.textContent='Copy message';b.classList.remove('done');},1600);
+  }catch(e){
+    const r = document.createRange(); r.selectNode($('msg'));
+    getSelection().removeAllRanges(); getSelection().addRange(r);
+  }
+});
+</script>
+</body>
+</html>
