@@ -181,6 +181,20 @@
 <script>
 const $ = id => document.getElementById(id);
 
+// Remember the UPI ID across page loads / refreshes.
+// (Works on the live Render site; browser storage is blocked inside
+// some preview sandboxes, so it's wrapped in try/catch.)
+const UPI_KEY = 'vj_upi_id';
+(function loadUpi(){
+  try{
+    const saved = localStorage.getItem(UPI_KEY);
+    if(saved) $('upi').value = saved;
+  }catch(e){/* storage unavailable in preview */}
+})();
+$('upi').addEventListener('input', () => {
+  try{ localStorage.setItem(UPI_KEY, $('upi').value.trim()); }catch(e){}
+});
+
 $('refreshBtn').addEventListener('click', () => location.reload());
 
 function num(str){
